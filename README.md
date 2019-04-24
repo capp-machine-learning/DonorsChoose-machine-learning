@@ -1,4 +1,4 @@
-# Machine Learning Pipeline with Delinquency Data
+# Machine Learning with DonorsChoose
 
 The goal of this assignment is to build a simple, modular, extensible, machine learning pipeline in Python. The pipeline should have functions that can do the following tasks:
 
@@ -43,7 +43,4 @@ I used conda as the environment manager.
         ├── pipeline.py
         └── README.md
 
-- __ML_pipeline.ipynb.ipynb__: This file is contains a writeup describing what I did and the results of running the code.
-- __pipeline.py__: This python file has a collection of functions that I have written for this analysis. All functions are imported and used in __ML_pipeline.ipynb__.
-- __config.py__: This python file contains the configuration for the code used for this analysis. These hardcoded values can be easily changed in the future for other uses.
-- __data__: This folder contains the dataset and the data dictionary for this analysis.
+
