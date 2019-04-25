@@ -1,8 +1,13 @@
+# config.py
 '''
 Config for Machine Learning Analysis.
 
 Si Young Byun (syb234)
 '''
+#from pathlib import Path
+
+#data_dir = Path()
+
 PIPELINE_CONFIG = {
     'dataset': 'data/credit-data.csv',
     'data_dict': 'data/data-dictionary.xls',
