@@ -16,8 +16,25 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier as DTC
 
-import config
+#import config
+import yaml
 
+# Read the variables in config
+def read_config(filename):
+
+    try:
+        with open(filename, 'r') as ymlfile:
+            cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
+        
+        print("Successfully loaded!")
+
+        return cfg
+    
+    except FileNotFoundError:
+        print("The config file is not found. Please check the file name.")
+    
+    else:
+        print("Unknown Error!")
 
 # Read Data
 
@@ -39,6 +56,7 @@ def read_data(filename):
 
     try:
         print("############################################################\n")
+        print("Load Successful!")
         print("Data Shape: {}\n".format(df.shape))
         print("Descritive Statistics:\n\n{}\n".format(df.describe()))
         print("############################################################\n")
@@ -53,6 +71,14 @@ def read_data(filename):
 
 
 # Explore Data
+
+def visualize_cont_var_dist(df, variables):
+
+    for var in variables:
+        sns.distplot(df[var].notnull())
+    
+    plt.show()
+        
 
 def view_variable_freq(df, variable):
     '''
@@ -86,7 +112,7 @@ def find_var_with_missing_values(df):
     only_nan_df = nan_df[nan_df['NaN'] > 0]
     nan_vars = only_nan_df.index.tolist()
 
-    print(nan_df)
+    print(only_nan_df)
     print("\nThe following variables have missing values: {}".format(nan_vars))
 
     message = "\n- {} has {} missing values, which are {}% of the entire data"
@@ -94,7 +120,7 @@ def find_var_with_missing_values(df):
     for var in nan_vars:
         num = only_nan_df.loc[var][0]
         perc = only_nan_df.loc[var][1]
-        print(message.format(var, num, perc))
+        print(message.format(var, int(num), perc))
 
     return nan_vars
 
@@ -258,9 +284,9 @@ def generate_dummy(df, variable):
     return merged_df
 
 # Build Classifier
-
+'''
 def create_X_y_set(df, test_size=config.PIPELINE_CONFIG['test_size'], rand=10):
-    '''
+    
     Given the dataset, split the dataset into the outcome set and feature set.
     Then, split those sets into the test set and the train set.
     - df: (pandas dataframe) dataframe of the dataset
@@ -268,7 +294,7 @@ def create_X_y_set(df, test_size=config.PIPELINE_CONFIG['test_size'], rand=10):
     - rand: (int) number for random state
     Output:
     - X_train, X_test, y_train, y_test: (pandas dataframe) test/train sets
-    '''
+    
     X_df = df.drop(labels=[config.PIPELINE_CONFIG['outcome_var']], axis=1)
     y_df = df[config.PIPELINE_CONFIG['outcome_var']]
     X_train, X_test, y_train, y_test = train_test_split(X_df, y_df,
@@ -276,19 +302,19 @@ def create_X_y_set(df, test_size=config.PIPELINE_CONFIG['test_size'], rand=10):
                                                         random_state=rand)
 
     return X_train, X_test, y_train, y_test
-
+'''
 
 # Evaluate Classifier
-
+'''
 def evaluate_decision_tree_model(decision_tree, X_test, y_test):
-    '''
+    
     Given the decision tree model and test sets, output the
     accuracy of the model.
     The code is adapted from:
     https://github.com/dssg/MLforPublicPolicy/
     - decision_tree: the model
     - X_test, y_test: (pandas dataframe) test sets
-    '''
+    
     thold = config.PIPELINE_CONFIG['threshold']
     calc_thold = lambda x, y: 0 if x < y else 1
     pred_scores_test = decision_tree.predict_proba(X_test)[:, 1]
@@ -299,14 +325,14 @@ def evaluate_decision_tree_model(decision_tree, X_test, y_test):
 
 
 def find_best_max_depth(X_train, y_train, X_test, y_test):
-    '''
+    
     Given the test/train sets, iterate through 1 - 10 and print the accuracy
     score for each max_depth.
     for the decision tree classifier.
     The code is adapted from:
     https://github.com/dssg/MLforPublicPolicy/
     - X_train, y_train, X_test, y_test: (pandas dataframe) test sets
-    '''
+    
     random_state = config.PIPELINE_CONFIG['random_state']
 
     for i in range(1, 10):
@@ -315,3 +341,4 @@ def find_best_max_depth(X_train, y_train, X_test, y_test):
         print('### max_depth: {}'.format(i))
         evaluate_decision_tree_model(dt, X_test, y_test)
         print('---------------')
+'''
