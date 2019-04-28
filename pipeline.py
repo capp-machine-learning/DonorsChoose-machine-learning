@@ -47,6 +47,9 @@ def read_data(filename):
 
     except UnboundLocalError:
         print("Failed to read the data! \nPlease check the filename.")
+    
+    else:
+        print("Unknown Error. Please try again!")
 
 
 # Explore Data
