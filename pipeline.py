@@ -6,6 +6,7 @@ Si Young Byun (syb234)
 # pylint: disable=invalid-name, unused-variable, wrong-import-position
 
 import matplotlib.pyplot as plt
+import missingno as msno
 import numpy as np
 import os
 import pandas as pd
@@ -88,15 +89,24 @@ def view_variable_freq(df, variable):
     - df: (pandas dataframe) pandas dataframe
     - variable: (string) variable name
     '''
-    val_count = df[variable].value_counts()
+    rot = 0
+    val_count = df[variable].value_counts(normalize=True)
 
-    print("Count of values in {}:\n\n{}\n".format(variable, val_count))
-    ax = val_count.plot('bar', rot=0, figsize=(15, 5))
-    ax.set(xlabel=variable, ylabel="Count")
+    print("Percentage of values in {}:\n\n{}\n".format(variable, val_count))
+    
+    print("\nFor visualization, those with percentage <= 0.005 are truncated.")
+    filtered_val_count = val_count[val_count >= 0.005]
+
+    if len(filtered_val_count) >= 8:
+        rot = 90
+
+    ax = filtered_val_count.plot('bar', rot=rot, figsize=(15, 5))
+    ax.set(xlabel=variable, ylabel="Percentage")
+    ax.grid(axis='y', alpha=0.40)
     plt.show()
 
 
-def find_var_with_missing_values(df):
+def analyze_missing_data(df):
     '''
     Find variables with missing data and return those in a list.
     Input:
@@ -113,7 +123,8 @@ def find_var_with_missing_values(df):
     nan_vars = only_nan_df.index.tolist()
 
     print(only_nan_df)
-    print("\nThe following variables have missing values: {}".format(nan_vars))
+    print("\n################################################################")
+    print("\nThe following features have missing values:\n{}".format(nan_vars))
 
     message = "\n- {} has {} missing values, which are {}% of the entire data"
 
@@ -122,7 +133,22 @@ def find_var_with_missing_values(df):
         perc = only_nan_df.loc[var][1]
         print(message.format(var, int(num), perc))
 
+    print("\n################################################################")
+    print("\nNullity matrix and correlation heatmap for features with NaNs.")
+
+    msno.matrix(df[nan_vars], figsize=(15, 5))
+    msno.heatmap(df[nan_vars], figsize=(10, 10))
+    plt.show()
+
     return nan_vars
+
+def generate_time_label(df, columns, time_format, label):
+	
+	#make sure given columns are in time dtype
+	for col in columns:
+		df[col] = pd.to_datetime(df[col], format=time_format)
+	
+	df[label] = (df[columns[1]] - df[columns[0]] <= pd.to_timedelta(60, unit='days')).astype('int')
 
 
 def generate_boxplots(df, columns):
