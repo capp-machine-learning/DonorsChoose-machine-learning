@@ -1,18 +1,14 @@
-# config.py
 '''
-Config for Machine Learning Analysis.
+Python file that allows the user to read the config file.
 
-Si Young Byun (syb234)
+Si Young Byun
 '''
-#from pathlib import Path
 
-#data_dir = Path()
+import yaml
 
-PIPELINE_CONFIG = {
-    'dataset': 'data/credit-data.csv',
-    'data_dict': 'data/data-dictionary.xls',
-    'outcome_var': 'SeriousDlqin2yrs',
-    'test_size': 0.3,
-    'threshold': 0.4,
-    'random_state': 10
-}
+def read_config(filename):
+
+    with open(filename, 'r') as ymlfile:
+        cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
+    
+    return cfg

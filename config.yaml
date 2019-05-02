@@ -1,6 +1,7 @@
 ---
 
-datafile: 'data/projects_2012_2013.csv'
+data_dir: './data/'
+datafile: 'projects_2012_2013.csv'
 outcome_var: 'fullyfunded_within_60days'
 features: ['school_latitude', 'school_longitude', 'school_metro',
            'school_charter', 'school_magnet', 'primary_focus_area',
@@ -8,6 +9,9 @@ features: ['school_latitude', 'school_longitude', 'school_metro',
            'students_reached', 'eligible_double_your_impact_match',
            'date_posted', 'datefullyfunded']
 time_format: '%m/%d/%y'
+time_features:
+  start: 'date_posted'
+  end: 'datefullyfunded'
 
 datatypes:
   float: []
