@@ -27,7 +27,7 @@ def read_config(filename):
         with open(filename, 'r') as ymlfile:
             cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
         
-        print("Successfully loaded!")
+        #print("Successfully loaded!")
 
         return cfg
     
@@ -142,13 +142,9 @@ def analyze_missing_data(df):
 
     return nan_vars
 
-def generate_time_label(df, columns, time_format, label):
+def generate_time_label(df, start_date, end_date, label):
 	
-	#make sure given columns are in time dtype
-	for col in columns:
-		df[col] = pd.to_datetime(df[col], format=time_format)
-	
-	df[label] = (df[columns[1]] - df[columns[0]] <= pd.to_timedelta(60, unit='days')).astype('int')
+	df[label] = (df[end_date] - df[start_date] <= pd.to_timedelta(60, unit='days')).astype('int')
 
 
 def generate_boxplots(df, columns):
@@ -241,6 +237,15 @@ def visualize_outliers(df, columns):
 
 # Pre-process Data
 
+def impute_with_value(df, columns, value):
+
+    for column in columns:
+        df[column] = df[column].fillna(value)
+        message = "For {}, all missing values are imputed with {}."
+        print(message.format(column, value))
+    
+    print("\nImputation completed!")
+
 def impute_missing_data(df, columns):
     '''
     Given the dataset, impute missing data for the given variables.
@@ -250,16 +255,20 @@ def impute_missing_data(df, columns):
     - Nothing
     '''
     for column in columns:
-        if abs(df[column].kurt()) > 3:
-            cond = df[column].median()
-            print("For {}, median is selected.".format(column))
+        if df[column].dtype == 'object':
+            estimate = df[column].value_counts().idxmax()
+            print("For {}, the most common value is selected.".format(column))
         else:
-            cond = df[column].mean()
-            print("For {}, mean is selected.".format(column))
-        estimate = round(cond)
+            if abs(df[column].kurt()) > 3:
+                cond = df[column].median()
+                print("For {}, median is selected.".format(column))
+            else:
+                cond = df[column].mean()
+                print("For {}, mean is selected.".format(column))
+            estimate = round(cond)
         df[column] = df[column].fillna(estimate)
 
-    print("Imputation completed!")
+    print("\nImputation completed!")
 
 def drop_variable(df, columns):
     '''
@@ -304,10 +313,10 @@ def generate_dummy(df, variable):
     - Nothing
     '''
     dummy = pd.get_dummies(df[variable])
-    merged_df = pd.concat([df, dummy], axis=1)
-    merged_df = merged_df.drop(columns=[variable])
+    df = pd.concat([df, dummy], axis=1)
+    df = df.drop(columns=[variable])
 
-    return merged_df
+    return df
 
 # Build Classifier
 '''
