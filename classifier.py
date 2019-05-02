@@ -13,7 +13,7 @@ OUTCOME = CONFIG['outcome_var']
 TEST_SIZE = CONFIG['test_size']
 RANDOM_STATE = CONFIG['random_state']
 
-def create_X_y_set(df, test_size=TEST_SIZE, random_state=RANDOM_STATE):
+def split_set(df, test_size=TEST_SIZE, random_state=RANDOM_STATE):
     
     Given the dataset, split the dataset into the outcome set and feature set.
     Then, split those sets into the test set and the train set.
