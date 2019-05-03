@@ -1,19 +1,5 @@
 # Machine Learning with DonorsChoose
 
-The goal of this assignment is to build a simple, modular, extensible, machine learning pipeline in Python. The pipeline should have functions that can do the following tasks:
-
-1. Read/Load Data
-
-2. Explore Data
-
-3. Pre-Process and Clean Data
-
-4. Generate Features/Predictors
-
-5. Build Machine Learning Classifier
-
-6. Evaluate Classifier
-
 ## Getting Started
 
 I used conda as the environment manager.
@@ -22,25 +8,24 @@ I used conda as the environment manager.
 
 1. Clone the repository.
 
-        $ git clone https://github.com/capp-machine-learning/delinquency-ml-analysis-pipeline.git
-        $ cd delinquency-ml-analysis-pipeline
+        $ git clone https://github.com/capp-machine-learning/DonorsChoose-machine-learning.git
+        $ cd DonorsChoose-machine-learning
 
 1. A yml file of the environment is available in environment.yml.
 
         $ conda env create --file=environment.yml
-        $ conda activate mlpipe
+        $ conda activate donorsml
         
 ### Files
 
-        delinquency-ml-analysis-pipeline
-        ├── data
-        │   ├── credit-data.csv
-        │   ├── data-dictionary.xls
-        │   └── tree.dot
-        ├── config.py
-        ├── environment.yml
-        ├── ML_pipeline.ipynb
-        ├── pipeline.py
-        └── README.md
+1. For the general workflow of the code and pipeline, look at DonorsChoose-Machine-Learning.ipynb
+
+2. The pipeline is divided into 6 files:
+    ├── config.py: load the config file
+    ├── config.yaml: config file
+    ├── model.py: train and evaluate models
+    ├── preprocessing.py: preprocess data
+    ├── pipeline.py: other helper functions
+    └── extract_data.py: load the data
 
 
