@@ -21,11 +21,11 @@ I used conda as the environment manager.
 1. For the general workflow of the code and pipeline, look at DonorsChoose-Machine-Learning.ipynb
 
 2. The pipeline is divided into 6 files:
-    ├── config.py: load the config file
-    ├── config.yaml: config file
-    ├── model.py: train and evaluate models
-    ├── preprocessing.py: preprocess data
-    ├── pipeline.py: other helper functions
-    └── extract_data.py: load the data
+            ├── config.py: load the config file
+            ├── config.yaml: config file
+            ├── model.py: train and evaluate models
+            ├── preprocessing.py: preprocess data
+            ├── pipeline.py: other helper functions
+            └── extract_data.py: load the data
 
 
