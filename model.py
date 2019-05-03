@@ -23,10 +23,12 @@ TEST_SIZE = CONFIG['test_size']
 RANDOM_STATE = CONFIG['random_state']
 THOLD = CONFIG['threshold']
 PR_THOLD = CONFIG['PR_thold']
+GRID = CONFIG['parameters']
+MODELS = CONFIG['models']
 
 
 def joint_sort_descending(l1, l2):
-    # l1 and l2 have to be numpy arrays
+
     idx = np.argsort(l1)[::-1]
 
     return l1[idx], l2[idx]
@@ -41,21 +43,17 @@ def generate_binary_at_k(y_scores, k):
 
 
 def precision_at_k(y_true, y_scores, k):
-    #y_scores_sorted, y_true_sorted = zip(*sorted(zip(y_scores, y_true), reverse=True))
+
     y_scores_sorted, y_true_sorted = joint_sort_descending(np.array(y_scores), np.array(y_true))
     preds_at_k = generate_binary_at_k(y_scores_sorted, k)
-    #precision, _, _, _ = metrics.precision_recall_fscore_support(y_true, preds_at_k)
-    #precision = precision[1]  # only interested in precision for label 1
     precision = precision_score(y_true_sorted, preds_at_k)
     return precision
 
 
 def recall_at_k(y_true, y_scores, k):
-    #y_scores_sorted, y_true_sorted = zip(*sorted(zip(y_scores, y_true), reverse=True))
+
     y_scores_sorted, y_true_sorted = joint_sort_descending(np.array(y_scores), np.array(y_true))
     preds_at_k = generate_binary_at_k(y_scores_sorted, k)
-    #precision, _, _, _ = metrics.precision_recall_fscore_support(y_true, preds_at_k)
-    #precision = precision[1]  # only interested in precision for label 1
     recall = recall_score(y_true_sorted, preds_at_k)
     return recall
 
@@ -160,3 +158,45 @@ def evaluate_model(X_test, y_test, model):
             recall_at_k(y_test, pred_scores_test, t))
     
     return eval_metrics
+
+
+def evaluation_table(temporal_sets, grid=False):
+
+    full_results = pd.DataFrame(columns=['Date', 'Model','Parameters','Accuracy','F1','AUC_ROC','Precision_at_1%', 'Recall_at_1%','Precision_at_2%', 'Recall_at_2%','Precision_at_5%', 'Recall_at_5%','Precision_at_10%', 'Recall_at_10%','Precision_at_20%', 'Recall_at_20%','Precision_at_30%', 'Recall_at_30%','Precision_at_50%', 'Recall_at_50%'])
+
+    i = 0
+
+    for (date, (X_train, X_test, y_train, y_test)) in temporal_sets:
+
+        for m in MODELS:
+            if grid is True:
+                mdls = train_model(X_train, y_train, m, GRID)
+            else:
+                mdls = train_model(X_train, y_train, m)
+            for params, ms in mdls:
+                (acc, f1, auc, p1, r1, p2, r2, p5, r5, p10, r10, p20, r20, p30, r30, p50, r50) = evaluate_model(X_test, y_test, ms)
+                full_results.loc[i,'Date'] = date
+                full_results.loc[i,'Model'] = m
+                full_results.loc[i,'Parameters'] = str(params)
+                full_results.loc[i,'Accuracy'] = acc
+                full_results.loc[i,'F1'] = f1
+                full_results.loc[i,'AUC_ROC'] = auc
+                full_results.loc[i,'Precision_at_1%'] = p1
+                full_results.loc[i,'Recall_at_1%'] = r1
+                full_results.loc[i,'Precision_at_2%'] = p2
+                full_results.loc[i,'Recall_at_2%'] = r2
+                full_results.loc[i,'Precision_at_5%'] = p5
+                full_results.loc[i,'Recall_at_5%'] = r5
+                full_results.loc[i,'Precision_at_10%'] = p10
+                full_results.loc[i,'Recall_at_10%'] = r10
+                full_results.loc[i,'Precision_at_20%'] = p20
+                full_results.loc[i,'Recall_at_20%'] = r20
+                full_results.loc[i,'Precision_at_30%'] = p30
+                full_results.loc[i,'Recall_at_30%'] = r30
+                full_results.loc[i,'Precision_at_50%'] = p50
+                full_results.loc[i,'Recall_at_50%'] = r50
+                i += 1
+
+
+    return full_results
+

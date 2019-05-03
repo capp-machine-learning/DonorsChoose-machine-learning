@@ -17,25 +17,6 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier as DTC
 
-#import config
-import yaml
-
-# Read the variables in config
-def read_config(filename):
-
-    try:
-        with open(filename, 'r') as ymlfile:
-            cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
-        
-        #print("Successfully loaded!")
-
-        return cfg
-    
-    except FileNotFoundError:
-        print("The config file is not found. Please check the file name.")
-    
-    else:
-        print("Unknown Error!")
 
 # Read Data
 
@@ -133,14 +114,16 @@ def analyze_missing_data(df):
         perc = only_nan_df.loc[var][1]
         print(message.format(var, int(num), perc))
 
-    print("\n################################################################")
+    return nan_vars
+
+def visualize_missing_data(df, nan_vars):
+
     print("\nNullity matrix and correlation heatmap for features with NaNs.")
 
     msno.matrix(df[nan_vars], figsize=(15, 5))
     msno.heatmap(df[nan_vars], figsize=(10, 10))
     plt.show()
 
-    return nan_vars
 
 def generate_time_label(df, start_date, end_date, label):
 	

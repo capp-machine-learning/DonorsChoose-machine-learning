@@ -10,7 +10,6 @@ from config import *
 
 CONFIG = read_config('config.yaml')
 DATATYPES = CONFIG['datatypes']
-TIME_FORMAT = CONFIG['time_format']
 
 # Reading the data
 def convert_dtypes(df):
@@ -18,7 +17,7 @@ def convert_dtypes(df):
     for dtype, features in DATATYPES.items():
         if dtype == "time":
             for feature in features:
-                df[feature] = pd.to_datetime(df[feature])#, format=TIME_FORMAT)
+                df[feature] = pd.to_datetime(df[feature])
         else:
             for feature in features:
                 df[feature] = df[feature].astype(dtype)
