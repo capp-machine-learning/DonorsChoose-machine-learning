@@ -25,25 +25,48 @@ feature_types:
                 'eligible_double_your_impact_match']
   continuous: []
 
+test_size: 0.3
+random_state: 10
+models: ['LR', 'KNN', 'DT', 'SVM', 'RF', 'GB']
+
+clfs:
+  LR: LogisticRegression(penalty='l1', C=1e5)
+
+  KNN: KNeighborsClassifier(n_neighbors=3)
+
+  DT: DecisionTreeClassifier()
+
+  SVM: svm.SVC(kernel='linear', probability=True, random_state=0)
+
+  RF: RandomForestClassifier(n_estimators=50, n_jobs=-1)
+
+  GB: GradientBoostingClassifier(learning_rate=0.05, subsample=0.5, max_depth=6, n_estimators=10)
+
 parameters:
   LR:
-    C: [0.001, 0.01, 0.1]
+    C: [0.001, 0.01, 0.1, 1]
     penalty: ['l1', 'l2']
   
-  NN:
-    n_neighbors: [1, 9]
+  KNN:
+    n_neighbors: [1, 5, 10, 25, 50]
+    weights: ['uniform', 'distance']
+    algorithm: ['auto', 'ball_tree', 'kd_tree']
   
   DT:
-    max_depth: [1, 10]
+    criterion: ['gini', 'entropy']
+    max_depth: [1, 5, 10, 20, 50, 100]
   
   SVM:
     kernel: ['linear']
-    C: [0.001, 1]
-    probability: [True]
-    random_state: 0
+    C: [0.0001, 0.001, 0.1, 1]
   
   RF:
     max_depth: [1, 50]
     n_estimators: [10, 100]
     max_features: [1, 0.75, 0.5]
 
+  GB:
+    n_estimators: [1, 10, 100]
+    learning_rate: [0.001, 0.1, 0.5]
+    subsample: [0.1, 0.5, 1.0]
+    max_depth: [5, 50]

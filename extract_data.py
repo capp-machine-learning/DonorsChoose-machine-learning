@@ -6,7 +6,24 @@ Si Young Byun
 import os
 import pandas as pd
 
+from config import *
+
+CONFIG = read_config('config.yaml')
+DATATYPES = CONFIG['datatypes']
+TIME_FORMAT = CONFIG['time_format']
+
 # Reading the data
+def convert_dtypes(df):
+
+    for dtype, features in DATATYPES.items():
+        if dtype == "time":
+            for feature in features:
+                df[feature] = pd.to_datetime(df[feature])#, format=TIME_FORMAT)
+        else:
+            for feature in features:
+                df[feature] = df[feature].astype(dtype)
+
+
 def read_data(filename):
     '''
     Read a dataset and print a short summary of the data.
@@ -23,6 +40,8 @@ def read_data(filename):
     elif ext == '.xls':
         df = pd.read_excel(filename, header=1)
     
+    convert_dtypes(df)
+
     return df
 
 # Summarize the loaded data
@@ -33,24 +52,3 @@ def summarize_data(df):
     print("Data Shape: {}\n".format(df.shape))
     print("Descritive Statistics:\n\n{}\n".format(df.describe()))
     print("################################################################\n")
-
-
-if __name__ == "__main__":
-
-    try:
-        df = read_data(DATA_DIR + DATAFILE)
-        convert_dtypes(df)
-        print("\nThe data is successfully loaded!\n")
-        summarize_data(df)
-
-        try:
-            clean_name = "clean_" + DATAFILE
-            directory = DATA_DIR + clean_name
-            df.to_csv(DATA_DIR + clean_name)
-            print("The loaded data is saved as {}.\n".format(directory))
-
-        except:
-            print("Failed to save the dataset.\n")
-
-    except:
-        print("Failed to read the data. Please check the filename.")

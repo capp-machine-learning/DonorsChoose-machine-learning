@@ -20,17 +20,6 @@ END = CONFIG['time_features']['end']
 OUTCOME = CONFIG['outcome_var']
 CAT = CONFIG['feature_types']['categorical']
 
-# Convert to the correct dtypes
-def convert_dtypes(df):
-
-    for dtype, features in DATATYPES.items():
-        if dtype == "time":
-            for feature in features:
-                df[feature] = pd.to_datetime(df[feature], format=TIME_FORMAT)
-        else:
-            for feature in features:
-                df[feature] = df[feature].astype(dtype)
-    
 
 def select_features(df, features):
 
@@ -65,10 +54,9 @@ if __name__ == "__main__":
 
     try:
         df = read_data(DATA_DIR + DATAFILE)
-        convert_dtypes(df)
         print("\nThe data is successfully loaded!\n")
         summarize_data(df)
-        print("ATTEMPTING TO PREPROCESS THE DATA")
+        print("ATTEMPTING TO PREPROCESS THE DATA\n")
 
         try:
             clean_name = "clean_" + DATAFILE
@@ -86,3 +74,4 @@ if __name__ == "__main__":
 
     except:
         print("Failed to read the data. Please check the filename.")
+    
