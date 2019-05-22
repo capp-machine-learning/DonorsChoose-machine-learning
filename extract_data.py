@@ -23,7 +23,7 @@ def convert_dtypes(df):
                 df[feature] = df[feature].astype(dtype)
 
 
-def read_data(filename):
+def read_data(filename, convert=False):
     '''
     Read a dataset and print a short summary of the data.
     Return a dataframe of the dataset.
@@ -39,9 +39,11 @@ def read_data(filename):
     elif ext == '.xls':
         df = pd.read_excel(filename, header=1)
     
-    convert_dtypes(df)
+    if convert is True:
+        convert_dtypes(df)
 
     return df
+
 
 # Summarize the loaded data
 def summarize_data(df):
