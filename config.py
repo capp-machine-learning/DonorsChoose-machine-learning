@@ -1,14 +1,22 @@
 '''
-Python file that allows the user to read the config file.
+Python function that allows the user to read the config file.
 
 Si Young Byun
 '''
 
 import yaml
+import logging
 
-def read_config(filename):
+logging.basicConfig(filename='./results.log', filemode='w', level=logging.INFO)
 
-    with open(filename, 'r') as ymlfile:
-        cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
+
+def read_config(filename, verbose=False):
+
+    try:
+        with open(filename, 'r') as ymlfile:
+            cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
     
-    return cfg
+        return cfg
+    
+    except:
+        
