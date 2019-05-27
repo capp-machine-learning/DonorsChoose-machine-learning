@@ -10,7 +10,11 @@ import os
 import logging.config
 
 
-def load_log_config(logger_name, config_filename):
+LOGGER_NAME = 'DonorsML'
+LOG_CONFIG = './log_config.conf'
+
+
+def load_log_config(logger_name=LOGGER_NAME, config_filename=LOG_CONFIG):
     '''
     A function that loads a logger with the given name, using the given config.
     Input:
@@ -37,7 +41,12 @@ def log_msg(logger, message):
     '''
 
     if logger:
-        logger.info(message)
+        if message == "SUCCESS":
+            logger.info("    >>> SUCCESS!")
+        elif message == "FAILED":
+            logger.info("    >>> FAILED!")
+        else:
+            logger.info(message)
 
 
 def read_config(filename, logger=None):
@@ -57,14 +66,12 @@ def read_config(filename, logger=None):
     try:
         with open(filename, 'r') as ymlfile:
             cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
-        msg2 = "    >>> SUCCESS!"
-        log_msg(logger, msg2)
+        log_msg(logger, "SUCCESS")
 
         return cfg
     
     except:
-        msg3 = "    >>> FAILED!"
-        log_msg(logger, msg3)
+        log_msg(logger, "FAILED")
 
         return None
 
@@ -75,7 +82,7 @@ if __name__ == "__main__":
     if os.path.isfile("./results.log"):
         os.remove("./results.log")
     
-    LOGGER = load_log_config('DonorsML', 'log_config.conf')
+    LOGGER = load_log_config()
     log_msg(LOGGER, "# Deleted the existing log file.")
 
     cfg = read_config("./config.yaml", logger=LOGGER)

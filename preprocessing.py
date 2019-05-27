@@ -6,7 +6,7 @@ Si Young Byun
 
 import pandas as pd
 
-from config import *
+from config import load_log_config, log_msg, read_config
 from extract_data import *
 
 CONFIG = read_config('config.yaml')
@@ -42,7 +42,6 @@ def generate_dummy(df, features):
     Output:
     - Nothing
     '''
-
     for feature in features:
         dummy = pd.get_dummies(df[feature])
         df = pd.concat([df, dummy], axis=1)
@@ -105,6 +104,8 @@ def impute_missing_data(df, columns):
 
     print("\nImputation completed!")
 
+
+#-----------------------------------------------------------------------------#
 if __name__ == "__main__":
 
     try:
