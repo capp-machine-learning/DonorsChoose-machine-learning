@@ -25,10 +25,10 @@ def convert_dtypes(df, logger=None):
                 for feature in features:
                     df[feature] = df[feature].astype(dtype)
         
-        log_msg(logger, "S")
+        log_msg(logger, "SUCCESS")
     
     except:
-        log_msg(logger, "F")
+        log_msg(logger, "FAILED")
 
 
 def read_data(filename, convert=False, logger=None):
@@ -47,10 +47,10 @@ def read_data(filename, convert=False, logger=None):
 
         if ext == '.csv':
             df = pd.read_csv(filename, index_col=0)
-            log_msg(logger, "S")
+            log_msg(logger, "SUCCESS")
         elif ext in ['.xls', '.xlsx']:
             df = pd.read_excel(filename, index_col=None)
-            log_msg(logger, "S")
+            log_msg(logger, "SUCCESS")
 
         if convert is True:
             convert_dtypes(df, logger)
@@ -58,7 +58,7 @@ def read_data(filename, convert=False, logger=None):
         return df
 
     except:
-        log_msg(logger, "F")
+        log_msg(logger, "FAILED")
 
 
 # Summarize the loaded data
@@ -67,10 +67,10 @@ def summarize_data(df, logger=None):
     row = df.shape[0]
     col = df.shape[1]
 
-    partition = "###########################################################\n"
+    partition = "\n#########################################################\n"
     log_msg(logger, partition)
     log_msg(logger, "Summary for the loaded dataset\n")
     log_msg(logger, "The total number of rows is {}\n".format(row))
     log_msg(logger, "The total number of rows is {}\n".format(col))
-    log_msg(logger, "Descriptive Statistics:\n{}\n".format(df.describe()))
+    log_msg(logger, "Descriptive Statistics:\n\n{}\n".format(df.describe()))
     log_msg(logger, partition)

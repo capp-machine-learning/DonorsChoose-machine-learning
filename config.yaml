@@ -19,7 +19,7 @@ datatypes:
   float: []
   Int64: ['students_reached']
   object: []
-  time: ['date_posted']
+  time: ['date_posted', 'datefullyfunded']
 
 feature_types:
   categorical: ['school_metro', 'school_charter', 'school_magnet',
