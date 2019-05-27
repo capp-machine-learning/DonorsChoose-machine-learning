@@ -22,9 +22,16 @@ OUTCOME = CONFIG['outcome_var']
 CAT = CONFIG['feature_types']['categorical']
 
 
-def select_features(df, features):
+def select_features(df, features, logger=None):
 
-    df = df[features]
+    msg = "\n# Attempting to select the following features:\n    {}..."
+    log_msg(logger, msg.format(features))
+    try:
+        df = df[features]
+        log_msg(logger, "SUCCESS")
+
+    except:
+        log_msg(logger, "FAILED")   
 
     return df
 
@@ -58,7 +65,7 @@ def generate_dummy(df, features, logger=None):
 
     try:
         for feature in features:
-            dummy = pd.get_dummies(df[feature])
+            dummy = pd.get_dummies(df[feature], prefix=feature)
             df = pd.concat([df, dummy], axis=1)
             df = df.drop(columns=[feature])
         log_msg(logger, "SUCCESS")
@@ -139,6 +146,53 @@ def impute_missing_data(df, columns, logger=None):
         log_msg(logger, "FAILED")
 
 
+def find_region(string):
+    
+    if isinstance(string, str):
+        if string in ['CT', 'ME', 'MA', 'NH', 'RI', 'VT', 'NJ', 'NY', 'PA']:
+            return 'Northeast'
+
+        elif string in ['IL', 'IN', 'MI', 'OH', 'WI', 'IA', 'KS', 'MN', 'MO',
+                        'NE', 'SD', 'ND']:
+            return 'Midwest'
+
+        elif string in ['DE', 'FL', 'GA', 'MD', 'NC', 'SC', 'VA', 'DC', 'WV',
+                        'AL', 'KY', 'MS', 'TN', 'AR', 'LA', 'OK', 'TX']:
+            return 'South'
+
+        elif string in ['AZ', 'CO', 'ID', 'MT', 'NV', 'NM', 'UT', 'WY', 'AK',
+                        'CA', 'HI', 'OR', 'WA']:
+            return 'West'
+
+        else:
+            return 'Others'
+
+
+def find_gender(string):
+    
+    if isinstance(string, str):
+        if string in ['Mr.']:
+            return 'male'
+
+        elif string in ['Mrs.', 'Ms.']:
+            return 'female'
+
+        else:
+            return 'others'
+
+
+def apply_using_func(df, variable, function, logger=None):
+
+    log_msg(logger, "\n# Discretizing {}...".format(variable))
+
+    try:
+        df[variable] = df[variable].apply(function)
+        log_msg(logger, "SUCCESS")
+    
+    except:
+        log_msg(logger, "FAILED")
+
+
 #-----------------------------------------------------------------------------#
 if __name__ == "__main__":
 
@@ -153,7 +207,13 @@ if __name__ == "__main__":
 
     clean_name = "clean_" + DATAFILE
     directory = DATA_DIR + clean_name
+
+    #Preprocessing the data
+    df = select_features(df, FEATURES, LOGGER)
     generate_time_label(df, [START, END], OUTCOME, LOGGER)
+    apply_using_func(df, 'teacher_prefix', find_gender, LOGGER)
+    apply_using_func(df, 'school_state', find_region, LOGGER)
+
     df = generate_dummy(df, CAT, LOGGER)
 
     #Missing Data and Imputation
