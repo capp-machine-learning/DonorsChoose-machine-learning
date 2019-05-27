@@ -44,7 +44,7 @@ def generate_time_label(df, time_cols, dep_var, logger=None):
     try:
         (start, end) = time_cols
         time_int = df[end] - df[start]
-        df[dep_var] = (time_int <= pd.to_timedelta(60, unit='days')).astype('int')
+        df[dep_var] = (time_int > pd.to_timedelta(60, unit='days')).astype('int')
         log_msg(logger, "SUCCESS")
 
     except:
@@ -165,7 +165,7 @@ def find_region(string):
             return 'West'
 
         else:
-            return 'Others'
+            return 'others'
 
 
 def find_gender(string):
@@ -213,7 +213,6 @@ if __name__ == "__main__":
     generate_time_label(df, [START, END], OUTCOME, LOGGER)
     apply_using_func(df, 'teacher_prefix', find_gender, LOGGER)
     apply_using_func(df, 'school_state', find_region, LOGGER)
-
     df = generate_dummy(df, CAT, LOGGER)
 
     #Missing Data and Imputation
@@ -222,5 +221,5 @@ if __name__ == "__main__":
 
     df = df.reset_index()
     df = df.drop(['projectid', 'datefullyfunded'], axis=1)
-    df.to_csv(DATA_DIR + clean_name)
+    df.to_csv(DATA_DIR + clean_name, index=False)
     log_msg(LOGGER, "\nThe cleaned data is saved as {}.\n".format(directory))

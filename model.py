@@ -15,7 +15,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import *
 
-from config import *
+from config import read_config
 
 CONFIG = read_config('config.yaml')
 OUTCOME = CONFIG['outcome_var']
@@ -98,9 +98,9 @@ def temporal_train_test_split(df, time_col, start_date, period):
 def temporal_loop(df, time_col, start_dates, period):
 
     temporal_sets = []
-    for i in start_dates:
-        sets = temporal_train_test_split(df, time_col, i, period)
-        pkg = (i, sets)
+    for start_date in start_dates:
+        sets = temporal_train_test_split(df, time_col, start_date, period)
+        pkg = (start_date, sets)
         temporal_sets.append(pkg)
     
     return temporal_sets
@@ -199,4 +199,3 @@ def evaluation_table(temporal_sets, grid=False):
 
 
     return full_results
-
