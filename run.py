@@ -47,7 +47,8 @@ def main(log=False):
         (X_train, X_test, y_train, y_test) = datasets
         
         log_msg(LOGGER, "# The data for {} is saved.\n".format(date))
-
+    
+    return temporal_sets
 
     #temporal_df = pd.DataFrame(columns=['Training Data','Testing Data'])
 

@@ -84,8 +84,8 @@ def temporal_train_test_split(df, time_col, start_date, period):
     start_date = pd.to_datetime(start_date)
     end_date = start_date + pd.DateOffset(months=period)
 
-    train = df[df[time_col] < start_date].drop(time_col, axis=1)
-    test = df[(df[time_col] >= start_date) & (df[time_col] < end_date)].drop(time_col, axis=1)
+    train = df[df[time_col] < start_date] #.drop(time_col, axis=1)
+    test = df[(df[time_col] >= start_date) & (df[time_col] < end_date)] #.drop(time_col, axis=1)
 
     y_train = train[OUTCOME]
     y_test = test[OUTCOME]

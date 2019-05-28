@@ -24,7 +24,7 @@ CAT = CONFIG['feature_types']['categorical']
 
 def select_features(df, features, logger=None):
 
-    msg = "\n# Attempting to select the following features:\n    {}..."
+    msg = "\n# Attempting to SELECT the following features:\n    {}..."
     log_msg(logger, msg.format(features))
     try:
         df = df[features]
@@ -38,13 +38,13 @@ def select_features(df, features, logger=None):
 
 def generate_time_label(df, time_cols, dep_var, logger=None):
 	
-    msg = "\n# Attempting to generate the dependent variable based on {}..."
-    log_msg(logger, msg.format(time_cols))
+    msg = "\n# Attempting to GENERATE a label called '{}' based on {}..."
+    log_msg(logger, msg.format(dep_var, time_cols))
 
     try:
         (start, end) = time_cols
         time_int = df[end] - df[start]
-        df[dep_var] = (time_int > pd.to_timedelta(60, unit='days')).astype('int')
+        df[dep_var] = (time_int <= pd.to_timedelta(60, unit='days')).astype('int')
         log_msg(logger, "SUCCESS")
 
     except:
