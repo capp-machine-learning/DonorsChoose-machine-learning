@@ -44,7 +44,10 @@ def main(log=False):
     temporal_sets = temporal_loop(df, 'date_posted', start_dates, 6)
 
     for date, datasets in temporal_sets:
+        (X_train, X_test, y_train, y_test) = datasets
+        
         log_msg(LOGGER, "# The data for {} is saved.\n".format(date))
+
 
     #temporal_df = pd.DataFrame(columns=['Training Data','Testing Data'])
 
