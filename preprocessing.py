@@ -20,6 +20,7 @@ START = CONFIG['time_features']['start']
 END = CONFIG['time_features']['end']
 OUTCOME = CONFIG['outcome_var']
 CAT = CONFIG['feature_types']['categorical']
+DROP = CONFIG['drop_vars']
 
 
 def select_features(df, features, logger=None):
@@ -132,14 +133,14 @@ def impute_missing_data(train_df, test_df, columns, logger=None):
         for col in columns:
             if train_df[col].dtype == 'object':
                 estimate = train_df[col].value_counts().idxmax()
-                msg = "- For {}, the most FREQUENT value is selected."
+                msg = "- For '{}', the most FREQUENT value is selected."
             else:
                 if abs(train_df[col].kurt()) > 3:
                     cond = train_df[col].median()
-                    msg = "- For {}, the MEDIAN is selected."
+                    msg = "- For '{}', the MEDIAN is selected."
                 else:
                     cond = train_df[col].mean()
-                    msg = "- For {}, the MEAN is selected."
+                    msg = "- For '{}', the MEAN is selected."
                 estimate = round(cond)
             log_msg(logger, msg.format(col))
             train_df[col] = train_df[col].fillna(estimate)
@@ -188,7 +189,7 @@ def find_gender(string):
 
 def apply_func(train_df, test_df, variable, function, logger=None):
 
-    log_msg(logger, "\n# Discretizing {}...".format(variable))
+    log_msg(logger, "\n# Discretizing '{}'...".format(variable))
 
     try:
         train_df[variable] = train_df[variable].apply(function)
@@ -197,6 +198,37 @@ def apply_func(train_df, test_df, variable, function, logger=None):
     
     except:
         log_msg(logger, "FAILED")
+
+
+def drop_columns(train_df, test_df, columns, logger=None):
+
+    msg = "\n# Attempting to DROP {}..."
+    log_msg(logger, msg.format(columns))
+
+    try:
+        train_df = train_df.reset_index()
+        train_df = train_df.drop(columns, axis=1)
+        test_df = test_df.reset_index()
+        test_df = test_df.drop(columns, axis=1)
+        log_msg(logger, "SUCCESS")
+    
+        return train_df, test_df
+
+    except:
+        log_msg(logger, "FAILED")
+
+DISCRETE = [('teacher_prefix', find_gender), ('school_state', find_region)]
+
+def preprocess(df, train_df, test_df, logger=None):
+
+    for col, func in DISCRETE:
+        apply_func(train_df, test_df, col, func, logger)
+    nan_vars = analyze_missing_data(df)
+    impute_missing_data(train_df, test_df, nan_vars, logger)
+    train_df, test_df = generate_dummy(train_df, test_df, CAT, logger)
+    train_df, test_df = drop_columns(train_df, test_df, DROP, logger)
+
+    return train_df, test_df
 
 
 #-----------------------------------------------------------------------------#

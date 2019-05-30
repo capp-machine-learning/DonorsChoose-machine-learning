@@ -8,19 +8,22 @@ import numpy as np
 import pandas as pd
 
 from sklearn import svm
-from sklearn.model_selection import train_test_split, ParameterGrid
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, BaggingClassifier
+from sklearn.dummy import DummyClassifier
+from sklearn.model_selection import train_test_split, ParameterGrid, GridSearchCV
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, BaggingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import *
 
 from config import log_msg, read_config
-from preprocessing import apply_func, find_gender, find_region, analyze_missing_data, impute_missing_data, generate_dummy
+from preprocessing import apply_func, find_gender, find_region, analyze_missing_data, impute_missing_data, generate_dummy, preprocess
 
 CONFIG = read_config('config.yaml')
 OUTCOME = CONFIG['outcome_var']
 CAT = CONFIG['feature_types']['categorical']
+DATA_START_DATE = CONFIG['data_start_date']
 START_DATES = CONFIG['start_dates']
 UNIT, GAP = CONFIG['test_train_gap']
 MONTH = CONFIG['test_month_size']
@@ -31,6 +34,8 @@ THOLD = CONFIG['threshold']
 PR_THOLD = CONFIG['PR_thold']
 GRID = CONFIG['parameters']
 MODELS = CONFIG['models']
+TUNING = CONFIG['tuning']
+METRICS = CONFIG['metrics']
 
 
 def joint_sort_descending(l1, l2):
@@ -89,17 +94,20 @@ def temporal_split(df, start_date, clean=False, logger=None):
     '''
     start_date = pd.to_datetime(start_date)
     end_date = start_date + pd.DateOffset(months=MONTH)
-    train_start_date = start_date - pd.to_timedelta(GAP, unit=UNIT)
+    train_start = start_date - pd.to_timedelta(GAP, unit=UNIT)
 
     partition = "\n#########################################################\n"
     log_msg(logger, partition)
     msg = """# CREATING train/test sets with:
-        - TRAIN SET: 2012-01-01 00:00:00 - {},
+        - TRAIN SET: {} - {},
         - TEST SET: {} - {}"""
-    log_msg(logger, msg.format(train_start_date - pd.to_timedelta(1, unit='days'), start_date, end_date - pd.to_timedelta(1, unit='days')))
+    log_msg(logger, msg.format(DATA_START_DATE,
+                               train_start - pd.to_timedelta(1, unit='days'),
+                               start_date,
+                               end_date - pd.to_timedelta(1, unit='days')))
 
-    train = df[df[TIME_COL] < train_start_date] #.drop(time_col, axis=1)
-    test = df[(df[TIME_COL] >= start_date) & (df[TIME_COL] < end_date)] #.drop(time_col, axis=1)
+    train = df[df[TIME_COL] < train_start]
+    test = df[(df[TIME_COL] >= start_date) & (df[TIME_COL] < end_date)]
 
     y_train = train[OUTCOME]
     y_test = test[OUTCOME]
@@ -108,14 +116,12 @@ def temporal_split(df, start_date, clean=False, logger=None):
 
     #Preprocessing the data
     if clean:
-        apply_func(X_train, X_test, 'teacher_prefix', find_gender, logger)
-        apply_func(X_train, X_test, 'school_state', find_region, logger)
-        nan_vars = analyze_missing_data(df)
-        impute_missing_data(X_train, X_test, nan_vars, logger)
-        X_train, X_test = generate_dummy(X_train, X_test, CAT, logger)
+        X_train, X_test = preprocess(df, X_train, X_test, logger)
+        X_train, X_test = X_train.align(X_test, join='outer', axis=1, fill_value=0)
+
     log_msg(logger, partition)
 
-    return (X_train, X_test, y_train, y_test)
+    return (X_train.values.astype(float), X_test.values.astype(float), y_train, y_test)
 
 
 def temporal_loop(df, clean=False, logger=None):
@@ -133,7 +139,7 @@ def temporal_loop(df, clean=False, logger=None):
     
     return temporal_sets
 
-
+'''
 def train_model(X_train, y_train, clf, grid=None):
 
     clfs = {
@@ -227,3 +233,134 @@ def evaluation_table(temporal_sets, grid=False):
 
 
     return full_results
+'''
+
+def minmax_scale_data(X_train, X_test):
+    '''
+    Given X_train, X_test datasets, scales the features using MinMaxScaler().
+    '''
+    scaler = MinMaxScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+
+    return X_train, X_test
+
+
+def train_model(X_train, y_train, clf, tuning, grid=None):
+    '''
+    Given X_train, X_test datasets, scales the features using MinMaxScaler().
+    '''
+
+    clfs = {
+        'Baseline': DummyClassifier,
+        'LR': LogisticRegression,
+        'KNN': KNeighborsClassifier,
+        'DT': DecisionTreeClassifier,
+        'SVM': svm.LinearSVC,
+        'RF': RandomForestClassifier,
+        'AB': AdaBoostClassifier,
+        'BG': BaggingClassifier}
+    
+    model = clfs[clf]
+
+    if grid:
+        param_grid = grid[clf]
+        classifier = GridSearchCV(model(), param_grid, cv=5, scoring=tuning)
+        classifier.fit(X_train, y_train)
+        best_params = classifier.best_params_
+        package = (best_params, model(**best_params).fit(X_train, y_train))
+            
+    else:
+        package = ("Default", model().fit(X_train, y_train))
+
+    return package
+
+
+def evaluate_model(X_test, y_test, model, metrics):
+    '''
+    Evaluate a model using a given metrics.
+    '''
+    calc_thold = lambda x, y: 0 if x < y else 1
+
+    if isinstance(model, svm.LinearSVC):
+        pred_scores_test = model.decision_function(X_test)
+        pred_test = model.predict(X_test)
+    
+    else:
+        pred_scores_test = model.predict_proba(X_test)[:, 1]
+        pred_test = np.array([calc_thold(sc, THOLD) for sc in pred_scores_test])
+
+    eval_metrics = {
+        'accuracy': accuracy_score(y_pred=pred_test, y_true=y_test),
+        'f1': f1_score(y_pred=pred_test, y_true=y_test),
+        'roc_auc': roc_auc_score(y_score=pred_scores_test, y_true=y_test),
+        'precision': precision_score(y_pred=pred_test, y_true=y_test),
+        'recall': recall_score(y_pred=pred_test, y_true=y_test)}
+
+    return eval_metrics[metrics]
+
+
+def train_configured_models(X_train, y_train, grid=False):
+    '''
+    Train the model using preconfigured settings in config.yaml.
+    If grid is False, it will use the sklearn default parameters
+    for the predetermined models.
+    '''
+
+    trained_models = list()
+
+    for m in MODELS:
+        if grid is True:
+            params, model = train_model(X_train, y_train, m, TUNING, GRID)
+        else:
+            params, model = train_model(X_train, y_train, m, TUNING)
+        trained_models.append((m, params, model))
+    
+    return trained_models
+
+
+def find_best_model(split_set, grid=False, scale=False, save=None):
+    '''
+    Find the best model given the split datasets. If grid is False, default
+    parameters will be used. If True, it will use the "best" parameters for each
+    classifier model. If scale is False, it will not scale features. If save is
+    None, the resulting evaluation table will not be saved.
+    '''
+
+    X_train, X_test, y_train, y_test = split_set
+
+    columns = ['model', 'parameters', 'accuracy',
+            'f1', 'roc_auc', 'precision', 'recall']
+
+    results = pd.DataFrame(columns=columns)
+
+    i = 0
+    best_model = list()
+    best_score = 0
+
+    if scale is True:
+        X_train, X_test = minmax_scale_data(X_train, X_test)
+
+    models = train_configured_models(X_train, y_train, grid=grid)
+
+    for name, params, model in models:
+        results.loc[i,'model'] = name
+        results.loc[i,'parameters'] = str(params)
+        for metric in METRICS:
+            score = evaluate_model(X_test, y_test, model, metric)
+            results.loc[i, metric] = score
+            if metric == TUNING:
+                if score > best_score:
+                    best_score = score
+                    best_model = [model]
+                elif score == best_score:
+                    best_model.append(model)
+        i += 1
+
+    results = results.sort_values([TUNING], ascending=False)
+    results = results.reset_index(drop=True)
+        
+    if save:
+        results.to_csv(path_or_buf=save, index=False)
+
+    return best_model

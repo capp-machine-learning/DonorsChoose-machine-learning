@@ -7,7 +7,7 @@ import os
 from config import load_log_config, log_msg, read_config
 from extract_data import read_data, summarize_data
 from preprocessing import select_features, generate_time_label
-from model import temporal_loop
+from model import temporal_loop, find_best_model
 
 
 CONFIG = read_config('config.yaml')
@@ -46,6 +46,10 @@ def main(log=False):
         (X_train, X_test, y_train, y_test) = datasets
         
         log_msg(LOGGER, "\n# The data for {} is saved.".format(date))
+    
+    models = find_best_model((X_train, X_test, y_train, y_test), grid=True, scale=True, save='./evaluations/evaluations.csv')
+    
+    log_msg(LOGGER, models)
     log_msg(LOGGER, "\nJob completed")
     
     return temporal_sets
