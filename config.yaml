@@ -15,12 +15,14 @@ time_features:
   start: 'date_posted'
   end: 'datefullyfunded'
 
+
 # Temporal Validation
 data_start_date: '2012-01-01 00:00:00'
 start_dates: ['2012-07-01', '2013-01-01', '2013-07-01']
 test_train_gap: ['days', 60]
 test_month_size: 6
 time_column: 'date_posted'
+
 
 # Preprocessing
 drop_vars: ['projectid', 'date_posted', 'datefullyfunded']
@@ -38,6 +40,8 @@ feature_types:
                 'grade_level', 'eligible_double_your_impact_match']
   continuous: []
 
+
+# Models
 test_size: 0.3
 random_state: 10
 threshold: 0.5
@@ -69,25 +73,25 @@ parameters:
   
   DT:
     criterion: ['gini', 'entropy']
-    max_depth: [2, 5, 10, 20, 30, 50]
-    max_features: [2, 5, 10, 15, 20]
+    max_depth: [30, 50, 60]
+    max_features: [15, 20, 25, 30]
     random_state: [10]
 
   SVM:
-    C: [0.01, 0.1, 1, 10, 50]
+    C: [1, 5, 10, 15, 20]
     penalty: ['l1', 'l2']
     loss: ['squared_hinge']
     dual: [False]
     random_state: [10]
   
   RF:
-    max_features: [2, 5, 10, 20, 30, 50]
+    max_features: [10, 20, 25, 30, 35, 40]
     random_state: [10]
 
   AB:
-    algorithm: ['SAMME', 'SAMME.R']
-    n_estimators: [1, 2, 5, 10]
-    learning_rate: [0.01, 0.1, 1, 10]
+    algorithm: [SAMME.R']
+    n_estimators: [50, 100]
+    learning_rate: [0.001, 0.01]
     random_state: [10]
   
   BG:

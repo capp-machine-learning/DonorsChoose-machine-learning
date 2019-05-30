@@ -125,7 +125,7 @@ def temporal_split(df, start_date, clean=False, logger=None):
 
     log_msg(logger, partition)
 
-    return (X_train.values.astype(float), X_test.values.astype(float), y_train, y_test)
+    return (X_train, X_test, y_train, y_test)
 
 
 def temporal_loop(df, clean=False, logger=None):
@@ -143,101 +143,6 @@ def temporal_loop(df, clean=False, logger=None):
     
     return temporal_sets
 
-'''
-def train_model(X_train, y_train, clf, grid=None):
-
-    clfs = {
-        'LR': LogisticRegression(),
-        'KNN': KNeighborsClassifier(),
-        'DT': DecisionTreeClassifier(),
-        'SVM': svm.LinearSVC(),
-        'RF': RandomForestClassifier(),
-        'GB': GradientBoostingClassifier(),
-        'BG': BaggingClassifier()}
-    
-    model = clfs[clf]
-    models = []
-
-    if grid:
-        param_grid = grid[clf]
-        for params in ParameterGrid(param_grid):
-            model.set_params(**params)
-            package = (params, model.fit(X_train, y_train))
-            models.append(package)
-            
-    else:
-        package = ("Default", model.fit(X_train, y_train))
-        models.append(package)
-
-    return models
-
-
-def evaluate_model(X_test, y_test, model):
-
-    calc_thold = lambda x, y: 0 if x < y else 1
-
-    if isinstance(model, svm.LinearSVC):
-        pred_scores_test = model.decision_function(X_test)
-        pred_test = model.predict(X_test)
-    
-    else:
-        pred_scores_test = model.predict_proba(X_test)[:, 1]
-        pred_test = np.array([calc_thold(sc, THOLD) for sc in pred_scores_test])
-
-    acc = accuracy_score(y_pred=pred_test, y_true=y_test)
-    f1 = f1_score(y_pred=pred_test, y_true=y_test)
-    auc = roc_auc_score(y_score=pred_scores_test, y_true=y_test)
-    eval_metrics = [acc, f1, auc]
-
-    for t in PR_THOLD:
-        eval_metrics.append(
-            precision_at_k(y_test, pred_scores_test, t))
-        eval_metrics.append(
-            recall_at_k(y_test, pred_scores_test, t))
-    
-    return eval_metrics
-
-
-def evaluation_table(temporal_sets, grid=False):
-
-    full_results = pd.DataFrame(columns=['Date', 'Model','Parameters','Accuracy','F1','AUC_ROC','Precision_at_1%', 'Recall_at_1%','Precision_at_2%', 'Recall_at_2%','Precision_at_5%', 'Recall_at_5%','Precision_at_10%', 'Recall_at_10%','Precision_at_20%', 'Recall_at_20%','Precision_at_30%', 'Recall_at_30%','Precision_at_50%', 'Recall_at_50%'])
-
-    i = 0
-
-    for (date, (X_train, X_test, y_train, y_test)) in temporal_sets:
-
-        for m in MODELS:
-            if grid is True:
-                mdls = train_model(X_train, y_train, m, GRID)
-            else:
-                mdls = train_model(X_train, y_train, m)
-            for params, ms in mdls:
-                (acc, f1, auc, p1, r1, p2, r2, p5, r5, p10, r10, p20, r20, p30, r30, p50, r50) = evaluate_model(X_test, y_test, ms)
-                full_results.loc[i,'Date'] = date
-                full_results.loc[i,'Model'] = m
-                full_results.loc[i,'Parameters'] = str(params)
-                full_results.loc[i,'Accuracy'] = acc
-                full_results.loc[i,'F1'] = f1
-                full_results.loc[i,'AUC_ROC'] = auc
-                full_results.loc[i,'Precision_at_1%'] = p1
-                full_results.loc[i,'Recall_at_1%'] = r1
-                full_results.loc[i,'Precision_at_2%'] = p2
-                full_results.loc[i,'Recall_at_2%'] = r2
-                full_results.loc[i,'Precision_at_5%'] = p5
-                full_results.loc[i,'Recall_at_5%'] = r5
-                full_results.loc[i,'Precision_at_10%'] = p10
-                full_results.loc[i,'Recall_at_10%'] = r10
-                full_results.loc[i,'Precision_at_20%'] = p20
-                full_results.loc[i,'Recall_at_20%'] = r20
-                full_results.loc[i,'Precision_at_30%'] = p30
-                full_results.loc[i,'Recall_at_30%'] = r30
-                full_results.loc[i,'Precision_at_50%'] = p50
-                full_results.loc[i,'Recall_at_50%'] = r50
-                i += 1
-
-
-    return full_results
-'''
 
 def minmax_scale_data(X_train, X_test):
     '''
