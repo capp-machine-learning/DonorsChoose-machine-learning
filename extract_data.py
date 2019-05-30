@@ -40,7 +40,7 @@ def read_data(filename, convert=False, logger=None):
     Output:
     - df: (pandas dataframe) dataframe of the dataset
     '''
-    log_msg(logger, "\n# Loading the data...")
+    log_msg(logger, "\n# LOADING the data...")
     
     try:
         _, ext = os.path.splitext(filename)
@@ -69,7 +69,7 @@ def summarize_data(df, logger=None):
 
     partition = "\n#########################################################\n"
     log_msg(logger, partition)
-    log_msg(logger, "Summary for the loaded dataset\n")
+    log_msg(logger, "SUMMARY for the loaded dataset\n")
     log_msg(logger, "The total number of rows is {}\n".format(row))
     log_msg(logger, "The total number of rows is {}\n".format(col))
     log_msg(logger, "Descriptive Statistics:\n\n{}\n".format(df.describe()))

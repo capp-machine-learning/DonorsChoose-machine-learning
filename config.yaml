@@ -15,7 +15,12 @@ time_features:
   start: 'date_posted'
   end: 'datefullyfunded'
 
-start_dates: ['2013-07-01', '2013-01-01', '2012-07-01']
+# Temporal Validation
+start_dates: ['2012-07-01', '2013-01-01', '2013-07-01']
+test_train_gap: ['days', 60]
+test_month_size: 6
+time_column: 'date_posted'
+
 
 datatypes:
   float: []

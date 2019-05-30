@@ -51,7 +51,7 @@ def generate_time_label(df, time_cols, dep_var, logger=None):
         log_msg(logger, "FAILED")
 
 
-def generate_dummy(df, features, logger=None):
+def generate_dummy(train_df, test_df, features, logger=None):
     '''
     Given the dataset and the variable, generate dummy variables for it.
     - df: (pandas dataframe) dataframe of the dataset
@@ -65,11 +65,15 @@ def generate_dummy(df, features, logger=None):
 
     try:
         for feature in features:
-            dummy = pd.get_dummies(df[feature], prefix=feature)
-            df = pd.concat([df, dummy], axis=1)
-            df = df.drop(columns=[feature])
+            train_dummy = pd.get_dummies(train_df[feature], prefix=feature)
+            train_df = pd.concat([train_df, train_dummy], axis=1)
+            train_df = train_df.drop(columns=[feature])
+            test_dummy = pd.get_dummies(test_df[feature], prefix=feature)
+            test_df = pd.concat([test_df, test_dummy], axis=1)
+            test_df = test_df.drop(columns=[feature])
         log_msg(logger, "SUCCESS")
-        return df
+
+        return train_df, test_df
     
     except:
         log_msg(logger, "FAILED")
@@ -113,7 +117,7 @@ def analyze_missing_data(df, logger=None):
         log_msg(logger, "FAILED")
 
 
-def impute_missing_data(df, columns, logger=None):
+def impute_missing_data(train_df, test_df, columns, logger=None):
     '''
     Given the dataset, impute missing data for the given variables.
     - df: (pandas dataframe) dataframe of the dataset
@@ -121,24 +125,25 @@ def impute_missing_data(df, columns, logger=None):
     Output:
     - Nothing
     '''
-    msg = "\n# Attempting to impute the missing data...\n"
+    msg = "\n# Attempting to IMPUTE the missing data...\n"
     log_msg(logger, msg)
 
     try:
         for col in columns:
-            if df[col].dtype == 'object':
-                estimate = df[col].value_counts().idxmax()
-                msg = "- For {}, the most common value is selected."
+            if train_df[col].dtype == 'object':
+                estimate = train_df[col].value_counts().idxmax()
+                msg = "- For {}, the most FREQUENT value is selected."
             else:
-                if abs(df[col].kurt()) > 3:
-                    cond = df[col].median()
-                    msg = "- For {}, median is selected."
+                if abs(train_df[col].kurt()) > 3:
+                    cond = train_df[col].median()
+                    msg = "- For {}, the MEDIAN is selected."
                 else:
-                    cond = df[col].mean()
-                    msg = "- For {}, mean is selected."
+                    cond = train_df[col].mean()
+                    msg = "- For {}, the MEAN is selected."
                 estimate = round(cond)
             log_msg(logger, msg.format(col))
-            df[col] = df[col].fillna(estimate)
+            train_df[col] = train_df[col].fillna(estimate)
+            test_df[col] = test_df[col].fillna(estimate)
         
         log_msg(logger, "SUCCESS")
     
@@ -181,12 +186,13 @@ def find_gender(string):
             return 'others'
 
 
-def apply_using_func(df, variable, function, logger=None):
+def apply_func(train_df, test_df, variable, function, logger=None):
 
     log_msg(logger, "\n# Discretizing {}...".format(variable))
 
     try:
-        df[variable] = df[variable].apply(function)
+        train_df[variable] = train_df[variable].apply(function)
+        test_df[variable] = test_df[variable].apply(function)
         log_msg(logger, "SUCCESS")
     
     except:
@@ -211,8 +217,8 @@ if __name__ == "__main__":
     #Preprocessing the data
     df = select_features(df, FEATURES, LOGGER)
     generate_time_label(df, [START, END], OUTCOME, LOGGER)
-    apply_using_func(df, 'teacher_prefix', find_gender, LOGGER)
-    apply_using_func(df, 'school_state', find_region, LOGGER)
+    apply_func(df, 'teacher_prefix', find_gender, LOGGER)
+    apply_func(df, 'school_state', find_region, LOGGER)
     df = generate_dummy(df, CAT, LOGGER)
 
     #Missing Data and Imputation

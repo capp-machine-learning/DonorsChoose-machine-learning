@@ -40,13 +40,13 @@ def main(log=False):
     generate_time_label(df, [START, END], OUTCOME, LOGGER)
 
     # Splitting the dataframe (Debugging purpose)
-    start_dates = ['2012-07-01', '2013-01-01', '2013-07-01']
-    temporal_sets = temporal_loop(df, 'date_posted', start_dates, 6)
+    temporal_sets = temporal_loop(df, clean=True, logger=LOGGER)
 
     for date, datasets in temporal_sets:
         (X_train, X_test, y_train, y_test) = datasets
         
-        log_msg(LOGGER, "# The data for {} is saved.\n".format(date))
+        log_msg(LOGGER, "\n# The data for {} is saved.".format(date))
+    log_msg(LOGGER, "\nJob completed")
     
     return temporal_sets
 

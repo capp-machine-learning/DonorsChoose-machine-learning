@@ -15,10 +15,16 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import *
 
-from config import read_config
+from config import log_msg, read_config
+from preprocessing import apply_func, find_gender, find_region, analyze_missing_data, impute_missing_data, generate_dummy
 
 CONFIG = read_config('config.yaml')
 OUTCOME = CONFIG['outcome_var']
+CAT = CONFIG['feature_types']['categorical']
+START_DATES = CONFIG['start_dates']
+UNIT, GAP = CONFIG['test_train_gap']
+MONTH = CONFIG['test_month_size']
+TIME_COL = CONFIG['time_column']
 TEST_SIZE = CONFIG['test_size']
 RANDOM_STATE = CONFIG['random_state']
 THOLD = CONFIG['threshold']
@@ -77,29 +83,51 @@ def split_set(df, test_size=TEST_SIZE, random_state=RANDOM_STATE):
     return X_train, X_test, y_train, y_test
 
 
-def temporal_train_test_split(df, time_col, start_date, period):
+def temporal_split(df, start_date, clean=False, logger=None):
     '''
     
     '''
     start_date = pd.to_datetime(start_date)
-    end_date = start_date + pd.DateOffset(months=period)
+    end_date = start_date + pd.DateOffset(months=MONTH)
+    train_start_date = start_date - pd.to_timedelta(GAP, unit=UNIT)
 
-    train = df[df[time_col] < start_date] #.drop(time_col, axis=1)
-    test = df[(df[time_col] >= start_date) & (df[time_col] < end_date)] #.drop(time_col, axis=1)
+    partition = "\n#########################################################\n"
+    log_msg(logger, partition)
+    msg = """# CREATING train/test sets with:
+        - TRAIN SET: 2012-01-01 00:00:00 - {},
+        - TEST SET: {} - {}"""
+    log_msg(logger, msg.format(train_start_date - pd.to_timedelta(1, unit='days'), start_date, end_date - pd.to_timedelta(1, unit='days')))
+
+    train = df[df[TIME_COL] < train_start_date] #.drop(time_col, axis=1)
+    test = df[(df[TIME_COL] >= start_date) & (df[TIME_COL] < end_date)] #.drop(time_col, axis=1)
 
     y_train = train[OUTCOME]
     y_test = test[OUTCOME]
     X_train = train.drop(OUTCOME, axis=1)
     X_test = test.drop(OUTCOME, axis=1)
 
+    #Preprocessing the data
+    if clean:
+        apply_func(X_train, X_test, 'teacher_prefix', find_gender, logger)
+        apply_func(X_train, X_test, 'school_state', find_region, logger)
+        nan_vars = analyze_missing_data(df)
+        impute_missing_data(X_train, X_test, nan_vars, logger)
+        X_train, X_test = generate_dummy(X_train, X_test, CAT, logger)
+    log_msg(logger, partition)
+
     return (X_train, X_test, y_train, y_test)
 
 
-def temporal_loop(df, time_col, start_dates, period):
+def temporal_loop(df, clean=False, logger=None):
+
+    msg = "\n# Attempting to SPLIT the data temporally..."
+    log_msg(logger, msg)
+    msg1 = "# with each test set starting on the following dates:\n{}\n"
+    log_msg(logger, msg1.format(START_DATES))
 
     temporal_sets = []
-    for start_date in start_dates:
-        sets = temporal_train_test_split(df, time_col, start_date, period)
+    for start_date in START_DATES:
+        sets = temporal_split(df, start_date, clean, logger)
         pkg = (start_date, sets)
         temporal_sets.append(pkg)
     
