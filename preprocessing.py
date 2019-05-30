@@ -229,35 +229,3 @@ def preprocess(df, train_df, test_df, logger=None):
     train_df, test_df = drop_columns(train_df, test_df, DROP, logger)
 
     return train_df, test_df
-
-
-#-----------------------------------------------------------------------------#
-if __name__ == "__main__":
-
-    if os.path.isfile("./results.log"):
-        os.remove("./results.log")
-    
-    LOGGER = load_log_config()
-    log_msg(LOGGER, "# Deleted the existing log file.")
-
-    df = read_data(DATA_DIR + DATAFILE, convert=True, logger=LOGGER)
-    summarize_data(df, logger=LOGGER)
-
-    clean_name = "clean_" + DATAFILE
-    directory = DATA_DIR + clean_name
-
-    #Preprocessing the data
-    df = select_features(df, FEATURES, LOGGER)
-    generate_time_label(df, [START, END], OUTCOME, LOGGER)
-    apply_func(df, 'teacher_prefix', find_gender, LOGGER)
-    apply_func(df, 'school_state', find_region, LOGGER)
-    df = generate_dummy(df, CAT, LOGGER)
-
-    #Missing Data and Imputation
-    nan_vars = analyze_missing_data(df, LOGGER)
-    impute_missing_data(df, nan_vars, LOGGER)
-
-    df = df.reset_index()
-    df = df.drop(['projectid', 'datefullyfunded'], axis=1)
-    df.to_csv(DATA_DIR + clean_name, index=False)
-    log_msg(LOGGER, "\nThe cleaned data is saved as {}.\n".format(directory))

@@ -6,6 +6,9 @@ Si Young Byun
 
 import numpy as np
 import pandas as pd
+import re
+import warnings
+warnings.filterwarnings("ignore")
 
 from sklearn import svm
 from sklearn.dummy import DummyClassifier
@@ -36,6 +39,7 @@ GRID = CONFIG['parameters']
 MODELS = CONFIG['models']
 TUNING = CONFIG['tuning']
 METRICS = CONFIG['metrics']
+FINAL = CONFIG['final_metric']
 
 
 def joint_sort_descending(l1, l2):
@@ -290,14 +294,27 @@ def evaluate_model(X_test, y_test, model, metrics):
         pred_scores_test = model.predict_proba(X_test)[:, 1]
         pred_test = np.array([calc_thold(sc, THOLD) for sc in pred_scores_test])
 
-    eval_metrics = {
-        'accuracy': accuracy_score(y_pred=pred_test, y_true=y_test),
-        'f1': f1_score(y_pred=pred_test, y_true=y_test),
-        'roc_auc': roc_auc_score(y_score=pred_scores_test, y_true=y_test),
-        'precision': precision_score(y_pred=pred_test, y_true=y_test),
-        'recall': recall_score(y_pred=pred_test, y_true=y_test)}
+    if metrics == 'Accuracy':
+        score = accuracy_score(y_pred=pred_test, y_true=y_test)
 
-    return eval_metrics[metrics]
+    elif metrics == 'F1':
+        score = f1_score(y_pred=pred_test, y_true=y_test)
+
+    elif metrics == 'ROC_AUC':
+        score = roc_auc_score(y_score=pred_scores_test, y_true=y_test)
+
+    elif 'Recall' in metrics:
+        k = int(re.findall(r'\d+', metrics)[0])
+        score = recall_at_k(y_test, pred_scores_test, k)
+
+    elif 'Precision' in metrics:
+        k = int(re.findall(r'\d+', metrics)[0])
+        score = precision_at_k(y_test, pred_scores_test, k)
+
+    else:
+        score = None
+
+    return score
 
 
 def train_configured_models(X_train, y_train, grid=False):
@@ -329,8 +346,7 @@ def find_best_model(split_set, grid=False, scale=False, save=None):
 
     X_train, X_test, y_train, y_test = split_set
 
-    columns = ['model', 'parameters', 'accuracy',
-            'f1', 'roc_auc', 'precision', 'recall']
+    columns = ['model', 'parameters'] + METRICS
 
     results = pd.DataFrame(columns=columns)
 
@@ -349,7 +365,7 @@ def find_best_model(split_set, grid=False, scale=False, save=None):
         for metric in METRICS:
             score = evaluate_model(X_test, y_test, model, metric)
             results.loc[i, metric] = score
-            if metric == TUNING:
+            if metric == FINAL:
                 if score > best_score:
                     best_score = score
                     best_model = [model]
@@ -357,7 +373,7 @@ def find_best_model(split_set, grid=False, scale=False, save=None):
                     best_model.append(model)
         i += 1
 
-    results = results.sort_values([TUNING], ascending=False)
+    results = results.sort_values([FINAL], ascending=False)
     results = results.reset_index(drop=True)
         
     if save:

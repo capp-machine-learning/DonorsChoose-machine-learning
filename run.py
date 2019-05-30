@@ -41,22 +41,25 @@ def main(log=False):
 
     # Splitting the dataframe (Debugging purpose)
     temporal_sets = temporal_loop(df, clean=True, logger=LOGGER)
+    best_models = []
 
     for date, datasets in temporal_sets:
-        (X_train, X_test, y_train, y_test) = datasets
         
-        log_msg(LOGGER, "\n# The data for {} is saved.".format(date))
+        eval_csv = './evaluations/{}_evaluations.csv'.format(date)
+        models = find_best_model(datasets, grid=True, scale=True, save='./evaluations/{}_evaluations.csv'.format(date))
+        best_models.append(models)
+        log_msg(LOGGER, "\n# The evaluation has been saved as {}.".format(eval_csv))
+        log_msg(LOGGER, "\n# The best model for for {} set has been selected.".format(date))
     
-    models = find_best_model((X_train, X_test, y_train, y_test), grid=True, scale=True, save='./evaluations/evaluations.csv')
+    #models = find_best_model(datasets, grid=True, scale=True, save='./evaluations/evaluations.csv')
     
-    log_msg(LOGGER, models)
+    log_msg(LOGGER, best_models)
     log_msg(LOGGER, "\nJob completed")
     
-    return temporal_sets
+    return best_models
 
     #temporal_df = pd.DataFrame(columns=['Training Data','Testing Data'])
 
-    
 
 #-----------------------------------------------------------------------------#
 if __name__ == "__main__":

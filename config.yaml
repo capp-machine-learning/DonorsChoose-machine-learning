@@ -43,8 +43,13 @@ random_state: 10
 threshold: 0.5
 PR_thold: [1, 2, 5, 10, 20, 30, 50]
 models: ['Baseline', 'LR', 'KNN', 'DT', 'SVM', 'RF', 'BG']
-metrics: ['accuracy', 'f1', 'roc_auc', 'precision', 'recall']
+metrics: ['Accuracy', 'F1', 'ROC_AUC', 'Precision_at_1%', 'Recall_at_1%',
+          'Precision_at_2%', 'Recall_at_2%','Precision_at_5%', 'Recall_at_5%',
+          'Precision_at_10%', 'Recall_at_10%','Precision_at_20%',
+          'Recall_at_20%','Precision_at_30%', 'Recall_at_30%',
+          'Precision_at_50%', 'Recall_at_50%']
 tuning: 'precision'
+final_metric: 'Precision_at_5%'
 
 parameters:
 
@@ -53,38 +58,38 @@ parameters:
 
   LR:
     solver: ['liblinear']
-    C: [0.001]
+    C: [0.001, 0.01, 0.05, 0.1, 1, 10]
     penalty: ['l1', 'l2']
     random_state: [10]
   
   KNN:
-    n_neighbors: [2]
-    weights: ['uniform']
-    metric: ["euclidean"]
+    n_neighbors: [2, 5, 9]
+    weights: ['uniform', 'distance']
+    metric: ["euclidean", "manhattan"]
   
   DT:
-    criterion: ['gini']
-    max_depth: [2]
-    max_features: [2]
+    criterion: ['gini', 'entropy']
+    max_depth: [2, 5, 10]
+    max_features: [2, 5, 10]
     random_state: [10]
 
   SVM:
-    C: [0.001]
+    C: [0.001, 0.01, 0.1, 1]
     penalty: ['l1', 'l2']
     loss: ['squared_hinge']
     dual: [False]
     random_state: [10]
   
   RF:
-    max_features: [2]
+    max_features: [2, 5, 10]
     random_state: [10]
 
   AB:
-    algorithm: ['SAMME']
-    learning_rate: [0.001]
+    algorithm: ['SAMME', 'SAMME.R']
+    learning_rate: [0.001, 0.01, 0.1]
     random_state: [10]
   
   BG:
     max_samples: [0.05]
-    n_estimators: [2]
+    n_estimators: [2, 5, 10]
     random_state: [10]
