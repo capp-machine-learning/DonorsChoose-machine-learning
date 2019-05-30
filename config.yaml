@@ -58,38 +58,39 @@ parameters:
 
   LR:
     solver: ['liblinear']
-    C: [0.001, 0.01, 0.05, 0.1, 1, 10]
+    C: [0.01, 0.1, 1, 10, 20, 50]
     penalty: ['l1', 'l2']
     random_state: [10]
   
   KNN:
-    n_neighbors: [2, 5, 9]
+    n_neighbors: [1, 2, 4, 5, 10, 50]
     weights: ['uniform', 'distance']
     metric: ["euclidean", "manhattan"]
   
   DT:
     criterion: ['gini', 'entropy']
-    max_depth: [2, 5, 10]
-    max_features: [2, 5, 10]
+    max_depth: [2, 5, 10, 20, 30, 50]
+    max_features: [2, 5, 10, 15, 20]
     random_state: [10]
 
   SVM:
-    C: [0.001, 0.01, 0.1, 1]
+    C: [0.01, 0.1, 1, 10, 50]
     penalty: ['l1', 'l2']
     loss: ['squared_hinge']
     dual: [False]
     random_state: [10]
   
   RF:
-    max_features: [2, 5, 10]
+    max_features: [2, 5, 10, 20, 30, 50]
     random_state: [10]
 
   AB:
     algorithm: ['SAMME', 'SAMME.R']
-    learning_rate: [0.001, 0.01, 0.1]
+    n_estimators: [1, 2, 5, 10]
+    learning_rate: [0.01, 0.1, 1, 10]
     random_state: [10]
   
   BG:
-    max_samples: [0.05]
-    n_estimators: [2, 5, 10]
+    max_samples: [0.001, 0.01, 0.05, 0.1]
+    n_estimators: [1, 2, 5, 10]
     random_state: [10]
