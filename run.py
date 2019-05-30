@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 '''
 Python main file for the application.
 '''
