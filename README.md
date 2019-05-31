@@ -1,8 +1,9 @@
 # Machine Learning with DonorsChoose
 
+
 ## Getting Started
 
-I used conda as the environment manager.
+Conda has been used as the package manager for this project.
 
 ### Prerequisites
 
@@ -11,22 +12,32 @@ I used conda as the environment manager.
         $ git clone https://github.com/capp-machine-learning/DonorsChoose-machine-learning.git
         $ cd DonorsChoose-machine-learning
 
-1. A yml file of the environment is available in environment.yml.
+1. A yml file of the environment is available in `environment.yml`.
 
         $ conda env create --file=environment.yml
         $ conda activate donorsml
         
 ### Files
 
-1. For the general workflow of the code and pipeline, look at DonorsChoose-Machine-Learning.ipynb
+1. To replicate the pipeline process of this project, please make sure that all packages in `environment.yml` are __correctly installed__ and run the following commands.
 
-2. The pipeline is divided into 6 files:
+        $ chmod +x ./run.py
+        $ ./run.py
 
-            ├── config.py: load the config file
-            ├── config.yaml: config file
-            ├── model.py: train and evaluate models
-            ├── preprocessing.py: preprocess data
-            ├── pipeline.py: other helper functions
-            └── extract_data.py: load the data
+The whole process should take several hours, depending on the machine that the script is running on. You will be able to keep track by looking at `results.log`.
 
+1. The structure of the pipeline is as follows:
+
+            ├── data: the folder containing the dataset for the project
+            ├── evaluations: the folder containing the evaluation of different models created for temporally-split datasets
+            ├── images: the folder containing precision-recall curves for the best model for each temporally-split test set
+            ├── config.py: helper functions for logging and loading configurations
+            ├── config.yaml: configuration file for the pipeline
+            ├── environment.yml: Conda env file
+            ├── extract_data.py: helper functions for loading the dataset
+            ├── log_config.conf: configuration file for the log
+            ├── model.py: helper functions for machine learning modeling
+            ├── preprocessing.py: helper functions for preprocessing/cleaning the data
+            ├── run.py: python script file for running the entire pipeline
+            └── viz.py: helper functions for visualization
 
