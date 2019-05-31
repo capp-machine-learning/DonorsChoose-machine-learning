@@ -60,7 +60,8 @@ __Before__ preprocessing the data, the dataset was temporally split to take the 
 
 ### Results and Recommendations
 
-The following is the evaluation table of candidate models for the first train/test sets:
+Since I had three different train/test sets, I would have at most three different *best* models.
+The following is the evaluation table of candidate models for the first train/test sets as an example:
 
 |model   |parameters                                                                           |Accuracy          |F1                |ROC_AUC           |Precision_at_1%   |Recall_at_1%        |Precision_at_2%   |Recall_at_2%        |Precision_at_5%   |Recall_at_5%        |Precision_at_10%  |Recall_at_10%      |Precision_at_20%  |Recall_at_20%      |Precision_at_30%  |Recall_at_30%     |Precision_at_50%  |Recall_at_50%     |
 |--------|-------------------------------------------------------------------------------------|------------------|------------------|------------------|------------------|--------------------|------------------|--------------------|------------------|--------------------|------------------|-------------------|------------------|-------------------|------------------|------------------|------------------|------------------|
@@ -75,3 +76,6 @@ The following is the evaluation table of candidate models for the first train/te
 The table shows that all models perform better than the baseline classifier in terms of `Precision_at_5%` with the logistic regression classifier performing the best. The below shows the precision-recall curve of this logistic regression model.
 
 ![prc1](./images/2012-07-01_0_prc.png)
+
+
+Looking at all three `best` models across the time, it seems like the logistic regression classifier model seems to work best in terms of `Precision_at_5%` and recommend using this model for deployment.
