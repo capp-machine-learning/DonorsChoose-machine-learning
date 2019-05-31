@@ -57,18 +57,10 @@ def main(log=False):
         models = find_best_model(dts, grid=True, scale=True, save=eval_csv)
         
         for mdl in models:
-            #try:
-            #feature_imp = mdl.feature_importances_
-            #save = './images/{}_{}_feature_importance.csv'.format(date, count)
             save1 = './images/{}_{}_prc.png'.format(date, count)
-            #plot_feature_importances(feature_imp, datasets[0].columns, save)
             plot_precision_recall_curve(datasets[1], datasets[3], mdl, save1)
-            #msg1 = "\n# A feature importance graph has been saved as {}."
             msg2 = "\n# A Precision Recall curve has been saved as {}."
-            #log_msg(LOGGER, msg1.format(save))
             log_msg(LOGGER, msg2.format(save1))
-            #except:
-            #    log_msg(LOGGER, "FAILED")
             count += 1
 
         best_models.append(models)
@@ -77,15 +69,11 @@ def main(log=False):
         log_msg(LOGGER, msg3.format(eval_csv))
         log_msg(LOGGER, msg4.format(date))
     
-    #models = find_best_model(datasets, grid=True, scale=True, save='./evaluations/evaluations.csv')
-    
     log_msg(LOGGER, best_models)
-
     log_msg(LOGGER, "\nJob completed")
     
     return best_models
 
-    #temporal_df = pd.DataFrame(columns=['Training Data','Testing Data'])
 
 
 #-----------------------------------------------------------------------------#

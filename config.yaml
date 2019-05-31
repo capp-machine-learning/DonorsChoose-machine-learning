@@ -62,12 +62,12 @@ parameters:
 
   LR:
     solver: ['liblinear']
-    C: [0.01, 0.1, 1, 10, 20, 50]
+    C: [1, 10, 20, 50]
     penalty: ['l1', 'l2']
     random_state: [10]
   
   KNN:
-    n_neighbors: [1, 2, 4, 5, 10, 50]
+    n_neighbors: [2, 5, 10, 50]
     weights: ['uniform', 'distance']
     metric: ["euclidean", "manhattan"]
   
@@ -85,16 +85,16 @@ parameters:
     random_state: [10]
   
   RF:
-    max_features: [10, 20, 25, 30, 35, 40]
+    max_features: [10, 20, 25, 30, 35]
     random_state: [10]
 
   AB:
-    algorithm: [SAMME.R']
+    algorithm: ['SAMME.R']
     n_estimators: [50, 100]
-    learning_rate: [0.001, 0.01]
+    learning_rate: [0.001]
     random_state: [10]
   
   BG:
-    max_samples: [0.001, 0.01, 0.05, 0.1]
-    n_estimators: [1, 2, 5, 10]
+    max_samples: [0.01, 0.05, 0.1]
+    n_estimators: [1, 2, 5]
     random_state: [10]
