@@ -28,6 +28,7 @@ The whole process should take several hours, depending on the machine that the s
 
 The structure of the pipeline is as follows:
 
+        DonorsChoose-machine-learning
         ├── data: the folder containing the dataset for the project
         ├── evaluations: the folder containing the evaluation of different models created for temporally-split datasets
         ├── images: the folder containing precision-recall curves for the best model for each temporally-split test set
