@@ -60,7 +60,7 @@ __Before__ preprocessing the data, the dataset was temporally split to take the 
 
 ### Results and Recommendations
 
-The following is the evaluation of candidate models for the first train/test sets:
+The following is the evaluation table of candidate models for the first train/test sets:
 
 |model   |parameters                                                                           |Accuracy          |F1                |ROC_AUC           |Precision_at_1%   |Recall_at_1%        |Precision_at_2%   |Recall_at_2%        |Precision_at_5%   |Recall_at_5%        |Precision_at_10%  |Recall_at_10%      |Precision_at_20%  |Recall_at_20%      |Precision_at_30%  |Recall_at_30%     |Precision_at_50%  |Recall_at_50%     |
 |--------|-------------------------------------------------------------------------------------|------------------|------------------|------------------|------------------|--------------------|------------------|--------------------|------------------|--------------------|------------------|-------------------|------------------|-------------------|------------------|------------------|------------------|------------------|
@@ -72,3 +72,6 @@ The following is the evaluation of candidate models for the first train/test set
 |DT      |{'criterion': 'entropy', 'max_depth': 50, 'max_features': 30, 'random_state': 10}    |0.6286619160728424|0.7413676083821158|0.5458293331185453|0.7378048780487805|0.009917626326789886|0.7484756097560976|0.020122126142371213|0.7525898842169408|0.05061267980820458 |0.7544928419128846|0.1015122331052006 |0.7633622658748287|0.20544239990164337|0.766013602679931 |0.3092496209171755|0.7702661550642548|0.518298430392197 |
 |Baseline|{'strategy': 'uniform'}                                                              |0.7430720506730008|0.8526004996593232|0.5               |0.75              |0.01008155403467071 |0.7362804878048781|0.019794270726609567|0.7282145033516149|0.048973402729396334|0.7343892780992994|0.098807425925167  |0.7428049337597076|0.19990983976066554|0.7411430311643488|0.299209048809475 |0.7400572507460869|0.4979713946149748|
 
+The table shows that all models perform better than the baseline classifier in terms of `Precision_at_5%` with the logistic regression classifier performing the best. The below shows the precision-recall curve of this logistic regression model.
+
+![prc1](./images/2012-07-01_0_prc.png)
