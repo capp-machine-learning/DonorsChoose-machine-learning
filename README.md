@@ -28,16 +28,16 @@ The whole process should take several hours, depending on the machine that the s
 
 The structure of the pipeline is as follows:
 
-            ├── data: the folder containing the dataset for the project
-            ├── evaluations: the folder containing the evaluation of different models created for temporally-split datasets
-            ├── images: the folder containing precision-recall curves for the best model for each temporally-split test set
-            ├── config.py: helper functions for logging and loading configurations
-            ├── config.yaml: configuration file for the pipeline
-            ├── environment.yml: Conda env file
-            ├── extract_data.py: helper functions for loading the dataset
-            ├── log_config.conf: configuration file for the log
-            ├── model.py: helper functions for machine learning modeling
-            ├── preprocessing.py: helper functions for preprocessing/cleaning the data
-            ├── run.py: python script file for running the entire pipeline
-            └── viz.py: helper functions for visualization
+        ├── data: the folder containing the dataset for the project
+        ├── evaluations: the folder containing the evaluation of different models created for temporally-split datasets
+        ├── images: the folder containing precision-recall curves for the best model for each temporally-split test set
+        ├── config.py: helper functions for logging and loading configurations
+        ├── config.yaml: configuration file for the pipeline
+        ├── environment.yml: Conda env file
+        ├── extract_data.py: helper functions for loading the dataset
+        ├── log_config.conf: configuration file for the log
+        ├── model.py: helper functions for machine learning modeling
+        ├── preprocessing.py: helper functions for preprocessing/cleaning the data
+        ├── run.py: python script file for running the entire pipeline
+        └── viz.py: helper functions for visualization
 
