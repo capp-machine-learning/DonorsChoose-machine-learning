@@ -24,7 +24,7 @@ To replicate the pipeline process of this project, please make sure that all pac
         $ chmod +x ./run.py
         $ ./run.py
 
-The whole process should take several hours, depending on the machine that the script is running on. You will be able to keep track by looking at `results.log`.
+The whole process should take around 8 hours, depending on the machine that the script is running on. You will be able to keep track by looking at `results.log`.
 
 The project report is `report.md`.
 
@@ -42,6 +42,7 @@ The structure of the pipeline is as follows:
         ├── model.py: helper functions for machine learning modeling
         ├── preprocessing.py: helper functions for preprocessing/cleaning the data
         ├── report.md: PROJECT REPORT
+        ├── results.log: log file output by running run.py 
         ├── run.py: python script file for running the entire pipeline
         └── viz.py: helper functions for visualization
 
