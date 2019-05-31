@@ -42,13 +42,20 @@ There were a number of missing values. For categorical features, missing values 
 __Before__ preprocessing the data, the dataset was temporally split to take the temporal dimension into account. Specifically, three pairs of train/test datasets were created.
 
 
-| Train Set               | Test Set                |
-|-------------------------|-------------------------|
-| 2012/01/01 - 2012/05/01 | 2012/07/01 - 2012/12/31 |
-| 2012/01/01 - 2012/11/01 | 2013/01/01 - 2012/06/30 |
-| 2012/01/01 - 2013/05/01 | 2013/07/01 - 2013/12/31 |
+|   | Train Set               | Test Set                |
+|---|-------------------------|-------------------------|
+| 1 | 2012/01/01 - 2012/05/01 | 2012/07/01 - 2012/12/31 |
+| 2 | 2012/01/01 - 2012/11/01 | 2013/01/01 - 2012/06/30 |
+| 3 | 2012/01/01 - 2013/05/01 | 2013/07/01 - 2013/12/31 |
 
 
 ### Models
 
-Seven classifiers (i.e. Logistic Regression, K-Nearest Neighbor, Decision Trees,
+1. Seven classifiers (i.e. Logistic Regression, K-Nearest Neighbor, Decision Trees, SVM, Random Forests, Adaboosting, and Bagging) have been used to identify the best model for this project. Multiple combinations of parameters were tested for each classifier to find the parameters that produced the highest precision score for each classifier.
+
+2. After tuning for parameters, different evaluation metrics (accuracy, precision at different levels, recall at different levels, F1, Area under Curve) were measured for each classifier.
+
+3. Finally, the best model was selected by looking at the model with the highest `Precision_at_5%` score *as it is important to ensure that high proportion of positive identifications is actually correct in order to utilize the limited resources efficiently.* In an ideal world, all projects identified by my model would __NOT__ be funded within 60 days without interventions. Since I had three different train/test sets, I would have at most three different *best* models.
+
+
+### Results and Recommendations
