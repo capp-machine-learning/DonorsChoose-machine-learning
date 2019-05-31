@@ -19,14 +19,14 @@ Conda has been used as the package manager for this project.
         
 ### Files
 
-1. To replicate the pipeline process of this project, please make sure that all packages in `environment.yml` are __correctly installed__ and run the following commands.
+To replicate the pipeline process of this project, please make sure that all packages in `environment.yml` are __correctly installed__ and run the following commands.
 
         $ chmod +x ./run.py
         $ ./run.py
 
 The whole process should take several hours, depending on the machine that the script is running on. You will be able to keep track by looking at `results.log`.
 
-1. The structure of the pipeline is as follows:
+The structure of the pipeline is as follows:
 
             ├── data: the folder containing the dataset for the project
             ├── evaluations: the folder containing the evaluation of different models created for temporally-split datasets
