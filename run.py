@@ -9,7 +9,7 @@ from config import load_log_config, log_msg, read_config
 from extract_data import read_data, summarize_data
 from preprocessing import select_features, generate_time_label
 from model import temporal_loop, find_best_model
-from viz import plot_feature_importances, plot_precision_recall_curve
+from viz import plot_precision_recall_curve
 
 
 CONFIG = read_config('config.yaml')
@@ -57,27 +57,29 @@ def main(log=False):
         models = find_best_model(dts, grid=True, scale=True, save=eval_csv)
         
         for mdl in models:
-            feature_imp = mdl.feature_importances_
-            save = './images/{}_{}_feature_importance.csv'.format(date, count)
-            save1 = './images/{}_{}_prc.csv'.format(date, count)
-            plot_feature_importances(feature_imp, datasets[0].columns, save)
+            #try:
+            #feature_imp = mdl.feature_importances_
+            #save = './images/{}_{}_feature_importance.csv'.format(date, count)
+            save1 = './images/{}_{}_prc.png'.format(date, count)
+            #plot_feature_importances(feature_imp, datasets[0].columns, save)
             plot_precision_recall_curve(datasets[1], datasets[3], mdl, save1)
-            msg1 = "\n# A feature importance graph has been saved as {}."
+            #msg1 = "\n# A feature importance graph has been saved as {}."
             msg2 = "\n# A Precision Recall curve has been saved as {}."
-            log_msg(LOGGER, msg1.format(save))
+            #log_msg(LOGGER, msg1.format(save))
             log_msg(LOGGER, msg2.format(save1))
+            #except:
+            #    log_msg(LOGGER, "FAILED")
             count += 1
 
         best_models.append(models)
         msg3 = "\n# The evaluation has been saved as {}."
-        msg4 = "\n# The best model for {} set has been selected."
+        msg4 = "\n# The best model for {} set has been selected.\n"
         log_msg(LOGGER, msg3.format(eval_csv))
         log_msg(LOGGER, msg4.format(date))
     
     #models = find_best_model(datasets, grid=True, scale=True, save='./evaluations/evaluations.csv')
     
     log_msg(LOGGER, best_models)
-
 
     log_msg(LOGGER, "\nJob completed")
     
@@ -87,6 +89,7 @@ def main(log=False):
 
 
 #-----------------------------------------------------------------------------#
+
 if __name__ == "__main__":
 
     main(log=True)

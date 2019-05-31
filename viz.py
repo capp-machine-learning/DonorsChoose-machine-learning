@@ -14,25 +14,6 @@ import seaborn as sns
 from sklearn.metrics import roc_curve, auc, precision_recall_curve
 
 
-def plot_feature_importances(importances, col_names, save='./images/fi.png'):
-    """
-    Plot the feature importances of the model. The code adapted from:
-    The University of Michigan
-    """
-    indices = np.argsort(importances)[::-1][:5]
-    labels = col_names[indices][::-1]
-
-    fig, _ = plt.subplots(figsize=[12, 8])
-    plt.barh(range(5), sorted(importances, reverse=True)[:5][::-1], color='g',
-             alpha=0.4, edgecolor=['black']*5)
-
-    plt.xlabel("Feature Importance")
-    plt.ylabel("Feature Name")
-    plt.yticks(np.arange(5), labels)
-    
-    plt.savefig(save)
-
-
 def plot_precision_recall_curve(X_test, y_test, model, save='./images/prc.png'):
 
     if isinstance(model, svm.LinearSVC):
@@ -40,20 +21,30 @@ def plot_precision_recall_curve(X_test, y_test, model, save='./images/prc.png'):
     
     else:
         pred_scores_test = model.predict_proba(X_test)[:, 1]
-
-    precision, recall, _ = precision_recall_curve(y_test=y_test, y_score=pred_scores_test)
-
-    # In matplotlib < 1.5, plt.fill_between does not have a 'step' argument
-    step_kwargs = ({'step': 'post'}
-                if 'step' in signature(plt.fill_between).parameters
-                else {})
-    plt.step(recall, precision, color='b', alpha=0.2, where='post')
-    plt.fill_between(recall, precision, alpha=0.2, color='b', **step_kwargs)
-
-    plt.xlabel('Recall')
-    plt.ylabel('Precision')
-    plt.ylim([0.0, 1.05])
-    plt.xlim([0.0, 1.0])
-    plt.title(model)
-
-    plt.savefig(save)
+    
+    precision_curve, recall_curve, pr_thresholds = precision_recall_curve(y_test, pred_scores_test)
+    precision_curve = precision_curve[:-1]
+    recall_curve = recall_curve[:-1]
+    pct_above_per_thresh = []
+    number_scored = len(pred_scores_test)
+    for value in pr_thresholds:
+        num_above_thresh = len(pred_scores_test[pred_scores_test>=value])
+        pct_above_thresh = num_above_thresh / float(number_scored)
+        pct_above_per_thresh.append(pct_above_thresh)
+    pct_above_per_thresh = np.array(pct_above_per_thresh)
+    
+    plt.clf()
+    fig, ax1 = plt.subplots()
+    ax1.plot(pct_above_per_thresh, precision_curve, 'b')
+    ax1.set_xlabel('percent of population')
+    ax1.set_ylabel('precision', color='b')
+    ax2 = ax1.twinx()
+    ax2.plot(pct_above_per_thresh, recall_curve, 'r')
+    ax2.set_ylabel('recall', color='r')
+    ax1.set_ylim([0,1])
+    ax1.set_ylim([0,1])
+    ax2.set_xlim([0,1])
+    
+    name = model
+    plt.title(name)
+    plt.savefig(save, bbox_inches="tight")

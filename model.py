@@ -17,7 +17,7 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, Bagging
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import *
 
 from config import log_msg, read_config
@@ -144,11 +144,11 @@ def temporal_loop(df, clean=False, logger=None):
     return temporal_sets
 
 
-def minmax_scale_data(X_train, X_test):
+def standard_scale_data(X_train, X_test):
     '''
     Given X_train, X_test datasets, scales the features using MinMaxScaler().
     '''
-    scaler = MinMaxScaler()
+    scaler = StandardScaler()
     X_train = scaler.fit_transform(X_train)
     X_test = scaler.transform(X_test)
 
@@ -260,7 +260,7 @@ def find_best_model(split_set, grid=False, scale=False, save=None):
     best_score = 0
 
     if scale is True:
-        X_train, X_test = minmax_scale_data(X_train, X_test)
+        X_train, X_test = standard_scale_data(X_train, X_test)
 
     models = train_configured_models(X_train, y_train, grid=grid)
 
