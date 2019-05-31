@@ -26,6 +26,8 @@ To replicate the pipeline process of this project, please make sure that all pac
 
 The whole process should take several hours, depending on the machine that the script is running on. You will be able to keep track by looking at `results.log`.
 
+The project report is `report.md`.
+
 The structure of the pipeline is as follows:
 
         DonorsChoose-machine-learning
@@ -39,6 +41,7 @@ The structure of the pipeline is as follows:
         ├── log_config.conf: configuration file for the log
         ├── model.py: helper functions for machine learning modeling
         ├── preprocessing.py: helper functions for preprocessing/cleaning the data
+        ├── report.md: PROJECT REPORT
         ├── run.py: python script file for running the entire pipeline
         └── viz.py: helper functions for visualization
 
